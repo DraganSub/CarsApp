@@ -20,7 +20,7 @@ const TableComponent = (props) =>{
           {props.currentDataList.map(data => (
             <tr key={data.key}>
               {props.elementsNum.map(i =>(
-                <td key={uuidv4()}>{data[i] }</td>
+                <td key={uuidv4()} className={"table"+i}>{data[i] }</td>
               ))}
               <td>
                 <Link to={`/${props.pageLink}/${data.key}` } >

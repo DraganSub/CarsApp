@@ -1,35 +1,28 @@
 import React from "react";
 import { inject, observer } from "mobx-react";
 import { Link} from "react-router-dom";
-import AppBar from "@material-ui/core/AppBar";
-import Navigation from "../../Components/Navigation";
 import Pagination from"../../Components/Pagination";
 import SearchFilterInput from "../../Components/SearchFilter";
 import SortOption from "../../Components/SortingOptions";
 import TableComponent from "../../Components/TableComponent";
+import VehicleMakeListStore from "./VehicleMakeListStore";
+import MainLayout from "../../Layouts/MainLayout";
 
 
 
 
 class VehicleMakeListPage extends React.Component{
 
-  constructor(props){
-    super(props);
-    this.props.rootStore.vehicleMakeListStore.getVehicleMake(); 
-  }
+
 
   render(){
 
-    const vehiclesMake = this.props.rootStore.vehicleMakeListStore;
+    const vehiclesMake = this.props.vehicleMakeListStore;
 
     return(
 
-      <React.Fragment>
-      
-        <AppBar position="relative" color="secondary">
-          <Navigation />
-        </AppBar>
-
+      <MainLayout>
+       
         <div className="vehicleMake-addBtn">
           <Link to={"/addVehiclesMake"} >
             <button className="vehicleMake-list-addBtn">
@@ -47,7 +40,7 @@ class VehicleMakeListPage extends React.Component{
         </div>
 
         <div className="vehicleMake-sortContainer">
-          <SortOption onSort={vehiclesMake.setSortElements} sortBy="brand" />
+          <SortOption onSort={vehiclesMake.setSortElements} sortBy="make" />
         </div>
   
         <div className="vehicleMake-list-container">
@@ -56,8 +49,8 @@ class VehicleMakeListPage extends React.Component{
             currentDataList ={vehiclesMake.currentVehiclesMakeList}
             delete={vehiclesMake.delete}
             pageLink="listVehiclesMake"
-            tableHeadRow={["Vehicle Make Id","Vehicle Make Brand","Options"]}
-            elementsNum ={["id","brand"]}
+            tableHeadRow={["Id","Make","Options"]}
+            elementsNum ={["uid","make",]}
           />
          
           <Pagination 
@@ -66,10 +59,12 @@ class VehicleMakeListPage extends React.Component{
             setCurrentPage={vehiclesMake.setCurrentPage}
           />
         </div>
-
-      </React.Fragment>        
+      </MainLayout>
+        
     );
   }
 }
 
-export default inject("rootStore")(observer(VehicleMakeListPage));
+export default inject(rootStore => ({
+  vehicleMakeListStore: new VehicleMakeListStore(rootStore),
+}))(observer(VehicleMakeListPage));

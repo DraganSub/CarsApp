@@ -1,110 +1,100 @@
 
 import { makeObservable, observable, runInAction} from "mobx";
 import {action} from "mobx";
-import {v4 as uuidv4} from "uuid";
 import VehicleModelService from "../../Common/VehicleModelService.js";
+import VehicleMakeListStore from "../VehicleMake/VehicleMakeListStore.js";
+import VehicleModelListStore from "./VehicleModelListStore.js";
 
 
 class VehicleModelEditStore {
 
   constructor(rootStore){
+    this.rootStore = rootStore;
+   
 
-    this.vehicleModelService = new VehicleModelService();
-
-    this.carDetails = this.carDetails;
     makeObservable(this,{ 
-      brand:observable,
+      make:observable,
       carDetails:observable,
       cost:observable,
       redirect:observable,
       model:observable,
       imageUrl:observable,
-      updateBrand:action,
+      updateMake:action,
       updateCost:action,
       updateModel:action,
       updateImageUrl:action,
       getIdFromUrl:action,
-      redirectTo:action,
       getDetails:action,
 
       
     });
 
-    this.rootStore = rootStore;
+    this.vehicleModelService = new VehicleModelService();
+    this.vehicleModelListStore = new VehicleModelListStore();
+    this.vehicleMakeListStore = new VehicleMakeListStore();
+    
+    this.vehicleModelListStore.getvehicle();
+    this.vehicleMakeListStore.getVehicleMake(); 
+
+    const id = this.getIdFromUrl();
+    this.getDetails(id);
+    
   }
 
 
 
       carDetails = "";
-      brand=this.carDetails.brand || "";
+      make=this.carDetails.make || "";
       cost=this.carDetails.cost  || "";
       model=this.carDetails.model  || "";
       imageUrl= this.carDetails.imageUrl  || "";
       redirect= false
+
       
-      updateBrand(brandValue){
-        this.carDetails.brand = brandValue;
-      }
-
-      getDetails(id) {
-        this.vehicleModelService.ref
-          .child(id)
-          .once("value", (snapshot) => {
-            runInAction(() => {
-              this.carDetails = snapshot.val();
-            });  
-          });   
-      }
-
-  setCarDetails = carDetails => {
-    this.carDetails = carDetails;
-  }
-
-  redirectTo(){
-    this.redirect = false;
+  updateMake = (makeValue) => {
+    this.carDetails.make = makeValue;
   }
 
   redirectTrue(){
     this.redirect = true;
   }
 
-  updateCost(costValue){
+  updateCost = (costValue) => {
     this.carDetails.cost = costValue;
   }
 
-  updateModel(modelValue){
+  updateModel = (modelValue) => {
     this.carDetails.model = modelValue;
   }
 
-  updateImageUrl(imgUrlValue){
+  updateImageUrl = (imgUrlValue) => {
     this.carDetails.imageUrl =  imgUrlValue;
   }
 
 
-
   handleEdit = e => {
     e.preventDefault();
-    const key = this.getIdFromUrl();
-    const id = uuidv4();
-    const brand = this.carDetails.brand;
+    const id = this.getIdFromUrl();
+    const make = this.carDetails.make;
     const cost = this.carDetails.cost;
     const model = this.carDetails.model;
     const imageUrl = this.carDetails.imageUrl;
-    this.vehicleModelService.update(key,{id,brand,cost,model,imageUrl});
+    this.vehicleModelService.update(id,{id,make,cost,model,imageUrl});
     runInAction(() => {
       this.redirectTrue();
     });
-    
   }
 
-    getIdFromUrl= () =>{
-      const str = window.location.pathname;
-      const char = str.split("/");
-      const id = char[2];
-      return id;
-    }; 
+  getIdFromUrl= () =>{
+    const str = window.location.pathname;
+    const char = str.split("/");
+    const id = char[2];
+    return id;
+  }; 
 
-
+  getDetails(id) {
+    this.vehicleModelService.getDetails(id,data => this.carDetails = data);
+  }
 
     
 };

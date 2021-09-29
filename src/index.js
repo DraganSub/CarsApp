@@ -5,8 +5,6 @@ import App from "./Pages/App";
 import RootStore from "./Stores/rootStore.js";
 import "./index.css";
 
-
-
 const Root =(
   <Provider rootStore={new RootStore()} >   
     <App />

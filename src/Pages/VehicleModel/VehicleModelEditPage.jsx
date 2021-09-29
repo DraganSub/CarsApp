@@ -1,23 +1,12 @@
 import { observer,inject } from "mobx-react";
-import AppBar from "@material-ui/core/AppBar";
-import Navigation from "../../Components/Navigation";
 import React from "react";
 import {Redirect } from "react-router-dom";
-import VehicleModelListStore from "./VehicleModelListStore.js";
 import VehicleModelEditStore from "./VehicleModelEditStore.js";
-import VehicleMakeListStore from "../VehicleMake/VehicleMakeListStore.js";
+import SelectForm from "../../Components/SelectForm";
+import TextForm from "../../Components/TextForm";
+import MainLayout from "../../Layouts/MainLayout";
 
 class VehicleModelEditPage extends React.Component{
-
-  constructor(props){
-    super(props);
-    this.props.vehiclesStore.getvehicle();
-    this.props.editVehicleStore.redirectTo();
-    const id = this.props.editVehicleStore.getIdFromUrl();
-    this.props.editVehicleStore.getDetails(id);
-    this.props.vehicleMakeListStore.getVehicleMake(); 
-  }  
-
 
 
   render(){
@@ -25,15 +14,8 @@ class VehicleModelEditPage extends React.Component{
     const editVehicleStore = this.props.editVehicleStore;
 
     return(
-
-      <React.Fragment>
-        
-        <AppBar position="relative" color="secondary">
-          <Navigation /> 
-        </AppBar>
-
+      <MainLayout>
         <div className="container py-4" id="container-edit-page">
-         
           <div key={editVehicleStore.carDetails.id} >
             <div>
               <h1 style={{textAlign:"center"}}>Edit Vehicle</h1>
@@ -42,51 +24,34 @@ class VehicleModelEditPage extends React.Component{
                   <Redirect to="/listVehicles" />
                   :null
                 }  
-                <select name="cars" id="cars" value={editVehicleStore.carDetails.brand}  onChange={event => editVehicleStore.updateBrand(event.target.value)}>
-                  {this.props.vehicleMakeListStore.vehiclesMake.map((vehicle) => (
-                    <option key={vehicle.id} value={vehicle.brand}>{vehicle.brand}</option>
-                  ))}  
-                </select>
 
+                <SelectForm 
+                  name="cars"
+                  value={editVehicleStore.carDetails.make}
+                  setData={editVehicleStore.updateMake}
+                  optionPlaceholder = "-- Choose your Car Brand --"
+                  list ={editVehicleStore.vehicleMakeListStore.vehiclesMake}
 
-                <div className="form-floating">
-                  <input 
-                    type="number"
-                    name="cost"
-                    defaultValue={editVehicleStore.carDetails.cost}
-                    onChange={event => editVehicleStore.updateCost(event.target.value)}
-                    className="form-control"
-                    id="costLabel"
-                    required
-                  />
-                  <label htmlFor="costLabel">Cost</label>
-                </div>
+                />
+                
+                <TextForm 
+                  type="number"
+                  name="cost"
+                  value={editVehicleStore.carDetails.cost}
+                  setData={editVehicleStore.updateCost}
+                />
 
-                <div className="form-floating">
-                  <input 
-                    type="text"
-                    name="imageUrl"
-                    defaultValue={editVehicleStore.carDetails.imageUrl}
-                    onChange={event => editVehicleStore.updateImageUrl(event.target.value)}
-                    required
-                    className="form-control"
-                    id="imageUrlLabel"
-                  />
-                  <label htmlFor="imageUrlLabel" style={{fontSize:"13px"}}>Image URL</label>
-                </div>
+                <TextForm 
+                  name="imageUrl"
+                  value={editVehicleStore.carDetails.imageUrl}
+                  setData={editVehicleStore.updateImageUrl}
+                />
 
-                <div className="form-floating">
-                  <input
-                    type="text"
-                    name = "model"
-                    defaultValue={editVehicleStore.carDetails.model}                      
-                    onChange={event => editVehicleStore.updateModel(event.target.value)}
-                    className="form-control"
-                    id="modelLabel"
-                    required
-                  />
-                  <label htmlFor="modelLabel">Model</label>
-                </div>
+                <TextForm 
+                  name="model"
+                  value={editVehicleStore.carDetails.model}
+                  setData={editVehicleStore.updateModel}
+                />
                  
                 <button className="w-100 btn btn-lg btn-primary" onClick={(e)=>editVehicleStore.handleEdit(e)}> 
                   Edit vehicle
@@ -95,14 +60,11 @@ class VehicleModelEditPage extends React.Component{
             </div>
           </div> 
         </div>
-      </React.Fragment>
+      </MainLayout>
     );
   }
 };
 
 export default inject(rootStore => ({
-  vehiclesStore: new VehicleModelListStore(rootStore),
   editVehicleStore: new VehicleModelEditStore(rootStore),
-  vehicleMakeListStore: new VehicleMakeListStore(rootStore)
-
 }))(observer(VehicleModelEditPage));

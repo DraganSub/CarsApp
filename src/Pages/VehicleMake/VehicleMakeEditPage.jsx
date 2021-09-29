@@ -1,38 +1,26 @@
 import { observer,inject } from "mobx-react";
-import AppBar from "@material-ui/core/AppBar";
-import Navigation from "../../Components/Navigation";
 import React from "react";
 import { Redirect} from "react-router-dom";
 import VehicleMakeEditStore from "./VehicleMakeEditStore.js";
-import VehicleMakeListStore from "./VehicleMakeListStore.js";
+import TextForm from "../../Components/TextForm";
+import MainLayout from "../../Layouts/MainLayout";
 
 class VehicleMakeEditPage extends React.Component{
-  constructor(props){
-    super(props);
-    this.props.vehicleMakeListStore.getVehicleMake();
-    const id = this.props.vehicleMakeEditStore.getIdFromUrl();
-    this.props.vehicleMakeEditStore.getDetails(id);
-  }  
-  
 
   render(){
     const redirect = this.props.vehicleMakeEditStore.redirect;
     const vehicleMakeEdit = this.props.vehicleMakeEditStore;
-    const vehicleMakeList = this.props.vehicleMakeListStore.vehiclesMake;
+    const vehicleMakeList = this.props.vehicleMakeEditStore.vehicleMakeListStore.vehiclesMake;
     return(
-      <React.Fragment>
       
-        <AppBar position="relative" color="secondary">
-          <Navigation /> 
-        </AppBar>
+      <MainLayout>
+
   
         <div className="container py-12" id="container-edit-page">
 
           {vehicleMakeList.map(vehicle => ( 
             (vehicleMakeEdit.getIdFromUrl() === vehicle.key ) ?
 
-             
-  
               <div key={vehicle.key}  className="col-md-12" id="edit-form-input">
                 <h1 style={{textAlign:"center"}}>Edit Vehicle</h1>
 
@@ -41,18 +29,12 @@ class VehicleMakeEditPage extends React.Component{
                     <Redirect to="/listVehiclesMake" />
                     :null
                   }
-                  <div className="form-floating">
-                    <input
-                      type="text"
-                      name="brand"
-                      value={vehicleMakeEdit.carBrand.brand}
-                      onChange={event => vehicleMakeEdit.updateBrand(event.target.value)}
-                      className="form-control"
-                      id="brandLabel"
-                    />
-                    <label htmlFor="brandLabel">Brand</label>
-                  </div>
-  
+                  <TextForm 
+                    name="make"
+                    value={vehicleMakeEdit.carMake.make}
+                    setData={vehicleMakeEdit.updateMake}
+                    placeholder="Edit Make"
+                  />
                      
                   <button className="w-100 btn btn-lg btn-primary"> 
                     Edit
@@ -61,14 +43,14 @@ class VehicleMakeEditPage extends React.Component{
               </div>
               : ""
           ))}
+          
         </div>
-        
-      </React.Fragment>
+      </MainLayout>
+     
     );
   }
 }
   
 export default inject(rootStore => ({
-  vehicleMakeListStore: new VehicleMakeListStore(rootStore),
   vehicleMakeEditStore: new VehicleMakeEditStore(rootStore),
 }))(observer(VehicleMakeEditPage));

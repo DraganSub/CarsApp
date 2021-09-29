@@ -1,11 +1,8 @@
-import VehicleModelListStore from "../Pages/VehicleModel/VehicleModelListStore.js";
-import VehicleMakeListStore from "../Pages/VehicleMake/VehicleMakeListStore.js";
+import { RouterStore } from "mobx-react-router";
 
 class RootStore  {
   constructor(){
-    this.vehiclesModelListStore = new VehicleModelListStore(this);
-    this.vehicleMakeListStore = new VehicleMakeListStore(this);
-
+    this.routerStore =  new RouterStore(this);
   }
 }
 
